@@ -50,7 +50,6 @@ export class TodoFormComponent {
       const description = String(this.todosForm.controls['description'].value);
       const id = this.allTodos.length > 0 ? this.allTodos.length + 1 : 1;
       const done = false;
-
       this.todosSignalService.updateTodos({ id, title, description, done });
       this.dialogRefService.close();
     }

@@ -46,7 +46,8 @@ export class TodoCardComponent implements OnInit {
       this.todosSignal.update((todos) => {
         const todoSelected = todos.find((todo) => todo.id === todoId) as Todo;
         todoSelected && (todoSelected.done = true);
-        return [];
+        this.saveTodosInLocalStorage();
+        return todos;
       });
     }
   }
@@ -58,7 +59,7 @@ export class TodoCardComponent implements OnInit {
         this.todosSignal.update((todos) => {
           todos.splice(index, 1);
           this.saveTodosInLocalStorage();
-          return [];
+          return todos;
         });
       }
     }

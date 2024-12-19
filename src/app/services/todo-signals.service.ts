@@ -14,7 +14,7 @@ export class TodoSignalsService {
         if (todos !== null) {
           todos.push(new Todo(id, title, description, done));
         }
-        return [];
+        return todos;
       });
       this.saveTodosInLocalStorage();
     }
