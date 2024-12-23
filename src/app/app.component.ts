@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './components/header/header.component';
 import { TodoCardComponent } from './components/todo-card/todo-card.component';
@@ -14,6 +14,8 @@ import { filter, from, map, Observable, of, switchMap, zip } from 'rxjs';
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit {
+  @Input() public projectName!: string;
+
   private schoolService = inject(SchoolService);
   title = 'todo-list';
   public getStudents$ = this.schoolService.getStudents();
