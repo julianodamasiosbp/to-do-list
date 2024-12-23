@@ -4,7 +4,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { TodoCardComponent } from './components/todo-card/todo-card.component';
 import { CommonModule } from '@angular/common';
 import { SchoolData, SchoolService } from './services/school.service';
-import { filter, from, map, Observable, of, zip } from 'rxjs';
+import { filter, from, map, Observable, of, switchMap, zip } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -39,7 +39,9 @@ export class AppComponent implements OnInit {
       jobDescription: 'UX Designer',
     },
   ]);
+  private studentUserId = '2';
   ngOnInit(): void {
+    this.handleFindStudentById();
     this.getPeopleByJobDescription('Software Engineer');
     this.getMultipliedAges();
     this.getPeopleJobDescription();
@@ -102,5 +104,19 @@ export class AppComponent implements OnInit {
 
   private getTeachersDatas(): Observable<Array<SchoolData>> {
     return this.schoolService.getTeachers();
+  }
+
+  private handleFindStudentById():void {
+    this.getStudentsDatas().pipe(
+      switchMap((students) => this.findStudentById(students, this.studentUserId))
+    ).subscribe({
+      next: (response) => {
+        console.log("Retorno estudante filtrado: ", response)
+      }
+    })
+  }
+
+  private findStudentById(students: Array<SchoolData>, userId: string): Observable<(SchoolData | undefined)[]> {
+    return of([students.find(student => student.id === userId)])
   }
 }
