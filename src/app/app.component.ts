@@ -1,10 +1,20 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+  WritableSignal,
+} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './components/header/header.component';
 import { TodoCardComponent } from './components/todo-card/todo-card.component';
 import { CommonModule } from '@angular/common';
 import { SchoolData, SchoolService } from './services/school.service';
 import { filter, from, map, Observable, of, switchMap, zip } from 'rxjs';
+import { TodoSignalsService } from './services/todo-signals.service';
+import { Todo } from './models/model/todo.model';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +25,7 @@ import { filter, from, map, Observable, of, switchMap, zip } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   @Input() public projectName!: string;
+  @Output() public outputEvent = new EventEmitter<string>();
 
   private schoolService = inject(SchoolService);
   title = 'todo-list';
@@ -42,6 +53,11 @@ export class AppComponent implements OnInit {
     },
   ]);
   private studentUserId = '2';
+  public todoSignals!: WritableSignal<Array<Todo>>;
+  public isRender = false;
+
+  constructor(public todoService: TodoSignalsService) {}
+
   ngOnInit(): void {
     this.handleFindStudentById();
     this.getPeopleByJobDescription('Software Engineer');
@@ -54,6 +70,17 @@ export class AppComponent implements OnInit {
         console.log('Students$: ', response);
       },
     });
+  }
+
+  public handleEmitEvent(event: string) {
+    this.outputEvent.emit(event);
+  }
+
+  public handleCreateTodo(todo: Todo) {
+    if (todo) {
+      this.todoService.updateTodos(todo);
+      this.todoSignals = this.todoService.todosState;
+    }
   }
 
   public getSchoolDatas(): void {
@@ -108,17 +135,24 @@ export class AppComponent implements OnInit {
     return this.schoolService.getTeachers();
   }
 
-  private handleFindStudentById():void {
-    this.getStudentsDatas().pipe(
-      switchMap((students) => this.findStudentById(students, this.studentUserId))
-    ).subscribe({
-      next: (response) => {
-        console.log("Retorno estudante filtrado: ", response)
-      }
-    })
+  private handleFindStudentById(): void {
+    this.getStudentsDatas()
+      .pipe(
+        switchMap((students) =>
+          this.findStudentById(students, this.studentUserId)
+        )
+      )
+      .subscribe({
+        next: (response) => {
+          console.log('Retorno estudante filtrado: ', response);
+        },
+      });
   }
 
-  private findStudentById(students: Array<SchoolData>, userId: string): Observable<(SchoolData | undefined)[]> {
-    return of([students.find(student => student.id === userId)])
+  private findStudentById(
+    students: Array<SchoolData>,
+    userId: string
+  ): Observable<(SchoolData | undefined)[]> {
+    return of([students.find((student) => student.id === userId)]);
   }
 }
