@@ -1,4 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { first } from 'rxjs';
 import { TodoSignalsService } from './services/todo-signals.service';
@@ -81,4 +86,15 @@ describe('AppComponent', () => {
 
     expect(element.textContent).toBe('Test Angular Application');
   });
+
+  it('should isDone property to be false', () => {
+    component.handleCheckIsDone();
+    expect(component.isDone).toBe(false);
+  });
+
+  it('should isDone property to be true', fakeAsync(() => {
+    component.handleCheckIsDone();
+    tick(200);
+    expect(component.isDone).toBe(true);
+  }));
 });

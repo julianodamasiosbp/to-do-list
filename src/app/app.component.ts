@@ -55,6 +55,7 @@ export class AppComponent implements OnInit {
   private studentUserId = '2';
   public todoSignals!: WritableSignal<Array<Todo>>;
   public isRender = false;
+  public isDone = false;
 
   constructor(public todoService: TodoSignalsService) {}
 
@@ -154,5 +155,11 @@ export class AppComponent implements OnInit {
     userId: string
   ): Observable<(SchoolData | undefined)[]> {
     return of([students.find((student) => student.id === userId)]);
+  }
+
+  public handleCheckIsDone(): void {
+    setTimeout(() => {
+      this.isDone = true;
+    }, 200);
   }
 }
